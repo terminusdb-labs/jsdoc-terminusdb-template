@@ -6,6 +6,29 @@ function parsePackage() {
   return JSON.parse(data)
 }
 
+function parseMenu() {
+  const data = fs.readFileSync('./docs/navigationModel.json',
+                               {encoding:'utf8', flag:'r'});
+  const parsedMenu = JSON.parse(data)
+  const sections = {}
+  parsedMenu.forEach(entry => {
+    entry.subMenu.forEach(subMenu => {
+      const label = subMenu.label
+      if (typeof subMenu['subMenu'] !== 'undefined') {
+        subMenu['subMenu'].forEach(subMenuFunction => {
+          sections[subMenuFunction['id']] = label
+        })
+      }
+    })
+  })
+  return sections
+}
+
+const menu = parseMenu()
+
+function findSectionForFunction(funcName) {
+}
+
 /**
  * Publish hook for the JSDoc template.  Writes to JSON stdout.
  * @param {function} data The root of the Taffy DB containing doclet records.
@@ -15,6 +38,8 @@ exports.publish = function(data, opts) {
   const docs = data().get().filter(function(doc) {
     return !doc.undocumented;
   });
+  const groups = data({kind: "group"}).get()
+  console.log(groups)
   const classes = data({kind: "class"}).get()
   const functions = data({kind: "function"}).get().filter(x => !x.undocumented)
   const outputClasses = classes.map(class_ => {
@@ -35,6 +60,7 @@ exports.publish = function(data, opts) {
         '@type': 'Definition',
         name: func.name,
         summary: func.description,
+        section: (typeof menu[func.name] !== 'undefined' ? menu[func.name] : null),
         parameters: params,
         returns: (typeof func.returns !== 'undefined' ? func.returns.map(returns => {
           let type = "void"
