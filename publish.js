@@ -38,8 +38,6 @@ exports.publish = function(data, opts) {
   const docs = data().get().filter(function(doc) {
     return !doc.undocumented;
   });
-  const groups = data({kind: "group"}).get()
-  console.log(groups)
   const classes = data({kind: "class"}).get()
   const functions = data({kind: "function"}).get().filter(x => !x.undocumented)
   const outputClasses = classes.map(class_ => {
