@@ -39,8 +39,13 @@ exports.publish = function(data, opts) {
     return !doc.undocumented;
   });
   const classes = data({kind: "class"}).get()
+  const processedClasses = []
   const functions = data({kind: "function"}).get().filter(x => !x.undocumented)
-  const outputClasses = classes.map(class_ => {
+  const outputClasses = classes.flatMap(class_ => {
+    if (processedClasses.includes(class_.name)) {
+      return []
+    }
+    processedClasses.push(class_.name)
     const classFunctions = functions.filter(x => x.memberof === class_.name)
     const functionOutput = classFunctions.map(func => {
       let params = []
@@ -69,12 +74,12 @@ exports.publish = function(data, opts) {
         })[0] : {'@type': 'Returns', name: '', type: 'void' })
       }
     })
-    return {
+    return [{
       '@type': 'Class',
       name: class_.name,
       summary: class_.description,
       memberFunctions: functionOutput,
-    }
+    }]
   })
   const package = parsePackage()
   const application = {
