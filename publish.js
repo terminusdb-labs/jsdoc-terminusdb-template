@@ -39,6 +39,7 @@ exports.publish = function(data, opts) {
     return !doc.undocumented;
   });
   const classes = data({kind: "class"}).get()
+  console.log(JSON.stringify(classes))
   const processedClasses = []
   const functions = data({kind: "function"}).get().filter(x => !x.undocumented)
   const outputClasses = classes.flatMap(class_ => {
@@ -63,6 +64,7 @@ exports.publish = function(data, opts) {
         '@type': 'Definition',
         name: func.name,
         summary: func.description,
+        examples: typeof func.examples !== 'undefined' ? func.examples : [],
         section: (typeof menu[func.name] !== 'undefined' ? menu[func.name] : null),
         parameters: params,
         returns: (typeof func.returns !== 'undefined' ? func.returns.map(returns => {
