@@ -39,7 +39,6 @@ exports.publish = function(data, opts) {
     return !doc.undocumented;
   });
   const classes = data({kind: "class"}).get()
-  console.log(JSON.stringify(classes))
   const processedClasses = []
   const functions = data({kind: "function"}).get().filter(x => !x.undocumented)
   const outputClasses = classes.flatMap(class_ => {
