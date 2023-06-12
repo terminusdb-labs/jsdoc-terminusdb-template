@@ -63,7 +63,7 @@ exports.publish = function(data, opts) {
         '@type': 'Definition',
         name: func.name,
         summary: func.description,
-        examples: typeof func.examples !== 'undefined' ? func.examples : [],
+        examples: typeof func.examples !== 'undefined' ? func.examples.filter(x => x != null) : [],
         section: (typeof menu[func.name] !== 'undefined' ? menu[func.name] : null),
         parameters: params,
         returns: (typeof func.returns !== 'undefined' ? func.returns.map(returns => {
